@@ -10,8 +10,27 @@ if ! command -v mvn &> /dev/null; then
     exit 1
 fi
 
-# Start the Spring Boot application
-echo "Running Spring Boot application..."
-mvn spring-boot:run
+# Check for profile argument
+PROFILE=${1:-default}
 
-echo "Backend started successfully!"
+case $PROFILE in
+    "dev")
+        echo "Starting with DEV profile (SSL alternative config)..."
+        mvn spring-boot:run -Dspring.profiles.active=dev
+        ;;
+    "nossl")
+        echo "Starting with NO-SSL profile (complete SSL bypass)..."
+        mvn spring-boot:run -Dspring.profiles.active=nossl
+        ;;
+    "bypass")
+        echo "Starting with BYPASS profile (minimal config)..."
+        mvn spring-boot:run -Dspring.profiles.active=bypass
+        ;;
+    *)
+        echo "Starting with DEFAULT profile (trust SSL certificates)..."
+        echo "If SSL errors occur, try: ./start-backend.sh dev|nossl|bypass"
+        mvn spring-boot:run
+        ;;
+esac
+
+echo "Backend startup complete!"
