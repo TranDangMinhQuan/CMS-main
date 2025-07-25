@@ -21,10 +21,14 @@ public class DataInitializationService implements ApplicationRunner {
     
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        if (courtRepository.count() == 0) {
-            log.info("Initializing sample court data...");
-            initializeSampleCourts();
-            log.info("Sample court data initialized successfully!");
+        try {
+            if (courtRepository.findAll().isEmpty()) {
+                log.info("Initializing sample court data...");
+                initializeSampleCourts();
+                log.info("Sample court data initialized successfully!");
+            }
+        } catch (Exception e) {
+            log.error("Error during data initialization", e);
         }
     }
     
