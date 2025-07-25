@@ -281,7 +281,7 @@ If you encounter SSL/TLS certificate errors like:
 
 **Solution 1:** Update `application.properties` with:
 ```properties
-spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=badminton_booking;encrypt=false;trustServerCertificate=true;integratedSecurity=false;authenticationScheme=nativeAuthentication
+spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=CMS_system;encrypt=false;trustServerCertificate=true;integratedSecurity=false;authenticationScheme=nativeAuthentication;sslProtocol=TLS
 ```
 
 **Solution 2:** Use the alternative development profile:
@@ -289,14 +289,19 @@ spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=badminton_boo
 mvn spring-boot:run -Dspring.profiles.active=dev
 ```
 
-**Solution 3:** For older SQL Server versions, try:
+**Solution 3:** For complete SSL bypass (if still having issues):
+```bash
+mvn spring-boot:run -Dspring.profiles.active=nossl
+```
+
+**Solution 4:** For older SQL Server versions, try:
 ```properties
-spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=badminton_booking;trustServerCertificate=true
+spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=CMS_system;trustServerCertificate=true
 ```
 
 ### Common Issues
 
-- **Database not found**: Make sure SQL Server is running and database `badminton_booking` exists
+- **Database not found**: Make sure SQL Server is running and database `CMS_system` exists
 - **Port conflicts**: Change `server.port` in `application.properties` if port 8080 is in use
 - **Authentication failed**: Verify SQL Server username/password in `application.properties`
 
