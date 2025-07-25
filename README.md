@@ -270,6 +270,36 @@ The frontend is configured to connect to the backend at `http://localhost:8080/a
 
 This project is licensed under the MIT License.
 
+## Troubleshooting
+
+### SQL Server SSL Connection Issues
+
+If you encounter SSL/TLS certificate errors like:
+```
+"encrypt" property is set to "true" and "trustServerCertificate" property is set to "false"
+```
+
+**Solution 1:** Update `application.properties` with:
+```properties
+spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=badminton_booking;encrypt=false;trustServerCertificate=true;integratedSecurity=false;authenticationScheme=nativeAuthentication
+```
+
+**Solution 2:** Use the alternative development profile:
+```bash
+mvn spring-boot:run -Dspring.profiles.active=dev
+```
+
+**Solution 3:** For older SQL Server versions, try:
+```properties
+spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=badminton_booking;trustServerCertificate=true
+```
+
+### Common Issues
+
+- **Database not found**: Make sure SQL Server is running and database `badminton_booking` exists
+- **Port conflicts**: Change `server.port` in `application.properties` if port 8080 is in use
+- **Authentication failed**: Verify SQL Server username/password in `application.properties`
+
 ## Support
 
 For support or questions, please create an issue in the repository.
