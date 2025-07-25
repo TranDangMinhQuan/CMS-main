@@ -1,13 +1,23 @@
 #!/bin/bash
 
-echo "🚀 Starting Badminton Court Management Frontend..."
+echo "Starting Badminton Booking Frontend..."
 
-cd "Front end/cms-fe"
+cd frontend
 
-echo "📦 Installing dependencies..."
-npm install
+# Check if npm is available
+if ! command -v npm &> /dev/null; then
+    echo "Node.js/npm is not installed. Please install Node.js first."
+    exit 1
+fi
 
-echo "🔄 Starting React development server..."
-npm start
+# Install dependencies if node_modules doesn't exist
+if [ ! -d "node_modules" ]; then
+    echo "Installing dependencies..."
+    npm install
+fi
 
-echo "✅ Frontend is running on http://localhost:3000"
+# Start the React development server
+echo "Starting React development server..."
+npm run dev || npm start
+
+echo "Frontend started successfully!"

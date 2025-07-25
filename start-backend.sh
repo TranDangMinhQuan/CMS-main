@@ -1,14 +1,17 @@
 #!/bin/bash
 
-echo "🚀 Starting Badminton Court Management Backend..."
+echo "Starting Badminton Booking Backend..."
 
-cd "Back end/cms-system"
+cd backend
 
-echo "📦 Building the application..."
-./mvnw clean compile
+# Check if mvn is available
+if ! command -v mvn &> /dev/null; then
+    echo "Maven is not installed. Please install Maven first."
+    exit 1
+fi
 
-echo "🔄 Starting Spring Boot application..."
-./mvnw spring-boot:run
+# Start the Spring Boot application
+echo "Running Spring Boot application..."
+mvn spring-boot:run
 
-echo "✅ Backend is running on http://localhost:8080"
-echo "📖 API Documentation available at http://localhost:8080/swagger-ui.html"
+echo "Backend started successfully!"

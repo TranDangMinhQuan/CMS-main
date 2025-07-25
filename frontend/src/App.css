@@ -1,0 +1,700 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f5f5;
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Page Header */
+.page-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.page-header p {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+/* Navigation Bar Styles */
+.navbar {
+  background-color: #2c3e50;
+  padding: 1rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+}
+
+.navbar-brand:hover {
+  color: #3498db;
+}
+
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navbar-link {
+  color: white;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.navbar-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.navbar-welcome {
+  color: white;
+  font-weight: 500;
+}
+
+.navbar-auth {
+  display: flex;
+  gap: 10px;
+}
+
+/* Common Button Styles */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #545b62;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #1e7e34;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+/* Card Styles */
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.form-select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  background-color: white;
+}
+
+.form-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-section {
+  margin-bottom: 30px;
+}
+
+.form-section h3 {
+  color: #333;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+/* Court Cards */
+.court-card {
+  transition: transform 0.3s ease;
+}
+
+.court-card:hover {
+  transform: translateY(-5px);
+}
+
+.court-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.court-name {
+  color: #333;
+  margin: 0;
+}
+
+.court-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.star {
+  font-size: 1.2rem;
+  opacity: 0.3;
+}
+
+.star.filled {
+  opacity: 1;
+}
+
+.rating-text {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.court-info {
+  margin-bottom: 20px;
+}
+
+.court-description {
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.court-price {
+  font-size: 1.2rem;
+  color: #28a745;
+  margin-bottom: 10px;
+}
+
+.court-status {
+  margin-bottom: 15px;
+}
+
+.court-reviews {
+  margin-bottom: 20px;
+}
+
+.court-reviews h4 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.review-item {
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.review-rating {
+  display: flex;
+  gap: 2px;
+}
+
+.review-comment {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.court-actions {
+  text-align: center;
+}
+
+/* Status Styles */
+.status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status.available {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status.unavailable {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.status.maintenance {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status.confirmed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status.completed {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.status.cancelled {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.status.active {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status.suspended {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Role Styles */
+.role {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.role.guest {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.role.member {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.role.staff {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.role.owner {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Booking Styles */
+.booking-card {
+  border-left: 4px solid #007bff;
+}
+
+.booking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.booking-details p {
+  margin-bottom: 8px;
+  color: #666;
+}
+
+.booking-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.booking-summary {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.1rem;
+}
+
+.booking-btn {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1rem;
+  margin-top: 20px;
+}
+
+/* Dashboard Styles */
+.dashboard-stats {
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  text-align: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 10px;
+  padding: 30px 20px;
+}
+
+.stat-card h3 {
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+/* Admin Styles */
+.admin-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  border: 2px solid #007bff;
+  background: white;
+  color: #007bff;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-btn.active,
+.tab-btn:hover {
+  background: #007bff;
+  color: white;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+/* Grid Styles */
+.grid {
+  display: grid;
+  gap: 20px;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.grid-4 {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* Utility Classes */
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.mb-1 { margin-bottom: 10px; }
+.mb-2 { margin-bottom: 20px; }
+.mb-3 { margin-bottom: 30px; }
+
+.mt-1 { margin-top: 10px; }
+.mt-2 { margin-top: 20px; }
+.mt-3 { margin-top: 30px; }
+
+.p-1 { padding: 10px; }
+.p-2 { padding: 20px; }
+.p-3 { padding: 30px; }
+
+/* Loading Spinner */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error Message */
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  border: 1px solid #f5c6cb;
+}
+
+/* Success Message */
+.success-message {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  border: 1px solid #c3e6cb;
+}
+
+/* Table Styles */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.table th,
+.table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+.table tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* No Data Message */
+.no-bookings {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0 10px;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .navbar-menu {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .navbar-user {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .main-content {
+    padding: 10px;
+  }
+  
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .btn {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+  
+  .court-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .booking-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .admin-tabs {
+    flex-direction: column;
+  }
+  
+  .stat-value {
+    font-size: 2rem;
+  }
+  
+  .page-header h1 {
+    font-size: 2rem;
+  }
+}
