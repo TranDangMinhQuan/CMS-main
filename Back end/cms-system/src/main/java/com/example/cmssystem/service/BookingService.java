@@ -2,15 +2,18 @@ package com.example.cmssystem.service;
 
 import com.example.cmssystem.dto.BookingRequestDTO;
 import com.example.cmssystem.dto.BookingResponseDTO;
+import com.example.cmssystem.dto.CouponValidationDTO;
 import com.example.cmssystem.entity.auth.Account;
 import com.example.cmssystem.entity.booking.Booking;
 import com.example.cmssystem.entity.court.Court;
+import com.example.cmssystem.entity.coupon.CouponUsage;
 import com.example.cmssystem.enums.BookingStatus;
 import com.example.cmssystem.repository.BookingRepository;
 import com.example.cmssystem.repository.CourtRepository;
 import com.example.cmssystem.repository.auth.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +40,7 @@ public class BookingService {
     private final AccountRepository accountRepository;
     private final ModelMapper modelMapper;
     private final CourtService courtService;
+    @Lazy private final CouponService couponService;
     
     @Transactional
     public BookingResponseDTO createBooking(BookingRequestDTO requestDTO, String userEmail) {
@@ -69,14 +73,55 @@ public class BookingService {
         booking.setTotalHours(totalHours);
         booking.setPricePerHour(court.getPricePerHour());
         booking.setTotalAmount(totalAmount);
-        booking.setFinalAmount(totalAmount);
         booking.setCustomerName(requestDTO.getCustomerName());
         booking.setCustomerPhone(requestDTO.getCustomerPhone());
         booking.setCustomerEmail(requestDTO.getCustomerEmail());
         booking.setNotes(requestDTO.getNotes());
         booking.setStatus(BookingStatus.PENDING);
         
+        // Handle coupon if provided
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        BigDecimal finalAmount = totalAmount;
+        CouponUsage couponUsage = null;
+        
+        if (requestDTO.getCouponCode() != null && !requestDTO.getCouponCode().trim().isEmpty()) {
+            try {
+                // Validate coupon
+                Long userId = customer != null ? customer.getId() : null;
+                CouponValidationDTO validation = couponService.validateCoupon(
+                    requestDTO.getCouponCode(), totalAmount, userId);
+                
+                if (validation.isValid()) {
+                    discountAmount = validation.getDiscountAmount();
+                    finalAmount = validation.getFinalAmount();
+                }
+            } catch (Exception e) {
+                // If coupon validation fails, just log it and continue without discount
+                // You might want to throw an exception here depending on business requirements
+                System.err.println("Coupon validation failed: " + e.getMessage());
+            }
+        }
+        
+        booking.setDiscountAmount(discountAmount);
+        booking.setFinalAmount(finalAmount);
+        
         booking = bookingRepository.save(booking);
+        
+        // Apply coupon after booking is saved (if coupon was valid)
+        if (requestDTO.getCouponCode() != null && 
+            !requestDTO.getCouponCode().trim().isEmpty() && 
+            discountAmount.compareTo(BigDecimal.ZERO) > 0 && 
+            customer != null) {
+            try {
+                couponUsage = couponService.applyCoupon(requestDTO.getCouponCode(), booking, customer);
+            } catch (Exception e) {
+                // If coupon application fails, revert discount
+                booking.setDiscountAmount(BigDecimal.ZERO);
+                booking.setFinalAmount(totalAmount);
+                booking = bookingRepository.save(booking);
+                System.err.println("Coupon application failed: " + e.getMessage());
+            }
+        }
         
         return convertToResponseDTO(booking);
     }

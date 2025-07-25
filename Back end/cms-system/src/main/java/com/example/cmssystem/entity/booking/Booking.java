@@ -2,6 +2,7 @@ package com.example.cmssystem.entity.booking;
 
 import com.example.cmssystem.entity.auth.Account;
 import com.example.cmssystem.entity.court.Court;
+import com.example.cmssystem.entity.coupon.CouponUsage;
 import com.example.cmssystem.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -84,6 +85,10 @@ public class Booking {
 
     @Column(name = "Cancelled_At")
     private LocalDateTime cancelledAt;
+
+    // Coupon relationship
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private CouponUsage couponUsage;
 
     @PrePersist
     protected void onCreate() {
