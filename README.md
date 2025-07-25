@@ -1,204 +1,239 @@
-# Badminton Court Booking System
+# 🏸 Hệ thống Đặt sân Cầu lông
 
-Hệ thống đặt sân cầu lông với Spring Boot backend và React TypeScript frontend.
+Hệ thống quản lý đặt sân cầu lông với đầy đủ tính năng cho Guest, Member, Staff và Owner.
 
-## Tính năng chính
+## 🌟 Tính năng chính
 
-### Cho Guest (Khách vãng lai)
-- Xem thông tin các sân cầu lông
-- Xem đánh giá và rating của sân
+### 👥 Vai trò và Quyền hạn
+
+#### 🔗 **Guest (Khách vãng lai)**
+- Xem thông tin sân cầu lông
+- Xem reviews và ratings của các sân
 - Tìm kiếm sân theo tên
-- Xem sân còn trống theo thời gian
+- Xem lịch sân còn trống
 
-### Cho Member (Thành viên)
+#### 👤 **Member (Thành viên)**
 - Tất cả tính năng của Guest
-- Đăng nhập/Đăng ký tài khoản
-- Đặt sân cầu lông
-- Thanh toán online/offline
-- Áp dụng coupon giảm giá
-- Thuê vợt (30k/cây)
-- Viết review và rating sân
-- Xem lịch sử booking
+- Đăng ký và đăng nhập tài khoản
+- Đặt sân với lựa chọn thanh toán online/offline
+- Áp dụng mã giảm giá (coupon)
+- Thuê vợt cầu lông (30,000 VNĐ/cây)
+- Viết review và đánh giá sân
+- Xem lịch sử đặt sân của bản thân
 
-### Cho Staff (Nhân viên)
-- Quản lý các sân (thêm, sửa, xóa)
-- Set trạng thái sân (available, unavailable, maintenance)
-- Tính tiền cho khách (thanh toán offline)
-- Quản lý cho thuê vợt
-- Xem lịch sử giao dịch
+#### 👨‍💼 **Staff (Nhân viên)**
+- Quản lý trạng thái sân (available/unavailable)
+- Xử lý thanh toán trực tiếp tại sân
+- Quản lý dịch vụ cho thuê vợt
+- Tính toán phí dựa trên số giờ chơi
+- Xem báo cáo giao dịch theo ngày/tháng/năm
 
-### Cho Owner (Chủ sở hữu)
-- Tất cả tính năng của Staff
+#### 👑 **Owner (Chủ sở hữu)**
+- Tất cả quyền của Staff
 - Quản lý tài khoản Member và Staff
-- Suspend/Active tài khoản
-- Tạo tài khoản Staff
-- Xem báo cáo doanh thu theo tháng
-- Xem lịch sử giao dịch chi tiết
+- Tạo tài khoản cho Staff
+- Suspend/Resume tài khoản Member và Staff
+- Quản lý sân (thêm/sửa/xóa, bảo trì)
+- Xem báo cáo doanh thu chi tiết theo tháng
+- Quản lý hệ thống coupon
 
-## Công nghệ sử dụng
+## 🛠️ Công nghệ sử dụng
 
 ### Backend
 - **Java 17**
 - **Spring Boot 3.2.0**
-- **Spring Security** (Authentication & Authorization)
-- **Spring Data JPA** (Database ORM)
+- **Spring Security** (JWT Authentication)
+- **Spring Data JPA** (ORM)
 - **Microsoft SQL Server** (Database)
 - **Maven** (Build tool)
+- **Hibernate** (JPA Implementation)
 
 ### Frontend
-- **React 18** với **TypeScript**
-- **React Router DOM** (Routing)
+- **React 18**
+- **TypeScript**
+- **React Router DOM**
 - **Axios** (HTTP Client)
-- **CSS Modules** (Styling)
+- **CSS Modules**
+- **Modern Responsive Design**
 
-## Cài đặt và chạy dự án
+## 🚀 Cài đặt và Chạy
 
 ### Yêu cầu hệ thống
 - Java 17+
 - Node.js 16+
-- Microsoft SQL Server hoặc để Spring Boot tự tạo database
+- Docker và Docker Compose (cho SQL Server)
+- Git
 
-### 1. Cài đặt dependencies
+### 🐳 Bước 1: Cài đặt SQL Server
 
-#### Backend
 ```bash
-cd backend
-./mvnw clean install
+# Cài đặt Docker và SQL Server tự động
+./setup-sqlserver.sh
 ```
 
-#### Frontend
+**Hoặc cài đặt thủ công:**
+
+```bash
+# Cài đặt Docker
+sudo apt-get update
+sudo apt-get install docker.io docker-compose
+
+# Khởi động SQL Server container
+docker-compose up -d
+
+# Kiểm tra container đang chạy
+docker ps
+```
+
+### 🗄️ Thông tin Database
+- **Server**: localhost:1433
+- **Username**: sa  
+- **Password**: Password123
+- **Database**: badminton_booking (tự động tạo)
+
+### ⚙️ Bước 2: Chạy Backend
+
+```bash
+cd backend
+./mvnw clean spring-boot:run
+```
+
+### 🎨 Bước 3: Chạy Frontend
+
 ```bash
 cd frontend
 npm install
-```
-
-### 2. Cấu hình Database
-
-Cập nhật file `backend/src/main/resources/application.properties`:
-
-```properties
-# Database Configuration (Tùy chọn - Spring Boot có thể tự tạo DB)
-spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=badminton_booking;encrypt=false;trustServerCertificate=true
-spring.datasource.username=sa
-spring.datasource.password=YOUR_PASSWORD
-```
-
-### 3. Chạy ứng dụng
-
-#### Cách 1: Chạy script tự động
-```bash
-# Chạy backend
-chmod +x start-backend.sh
-./start-backend.sh
-
-# Chạy frontend (terminal mới)
-chmod +x start-frontend.sh
-./start-frontend.sh
-```
-
-#### Cách 2: Chạy thủ công
-
-**Backend:**
-```bash
-cd backend
-./mvnw spring-boot:run
-```
-
-**Frontend:**
-```bash
-cd frontend
 npm run dev
 ```
 
-### 4. Truy cập ứng dụng
+### 🔧 Hoặc sử dụng scripts tự động
 
-- **Frontend:** http://localhost:3000
-- **Backend API:** http://localhost:8080/api
+```bash
+# Terminal 1 - Backend
+./start-backend.sh
 
-## API Endpoints
+# Terminal 2 - Frontend
+./start-frontend.sh
+```
 
-### Authentication
+## 🌐 Truy cập ứng dụng
+
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8080/api
+- **H2 Console**: http://localhost:8080/h2-console (nếu dùng H2)
+
+## 📋 API Endpoints
+
+### Xác thực
+- `POST /api/auth/register` - Đăng ký tài khoản
 - `POST /api/auth/login` - Đăng nhập
-- `POST /api/auth/register` - Đăng ký
-- `POST /api/auth/logout` - Đăng xuất
 
-### Courts (Public)
-- `GET /api/courts/public` - Lấy danh sách sân (guest)
-- `GET /api/courts/public/{id}` - Chi tiết sân (guest)
-- `GET /api/courts/public/available` - Sân còn trống (guest)
-- `GET /api/courts/public/search` - Tìm kiếm sân (guest)
+### Sân cầu lông (Public)
+- `GET /api/courts/public` - Xem danh sách sân
+- `GET /api/courts/public/{id}` - Xem chi tiết sân
+- `GET /api/courts/public/available` - Xem sân còn trống
+- `GET /api/courts/public/search` - Tìm kiếm sân
 
-### Courts (Protected)
-- `GET /api/courts` - Lấy tất cả sân (member+)
-- `POST /api/courts` - Tạo sân mới (staff+)
-- `PUT /api/courts/{id}` - Cập nhật sân (staff+)
-- `PUT /api/courts/{id}/status` - Cập nhật trạng thái (owner)
-- `DELETE /api/courts/{id}` - Xóa sân (owner)
+### Quản lý sân (Protected)
+- `POST /api/courts` - Tạo sân mới (Staff/Owner)
+- `PUT /api/courts/{id}` - Cập nhật sân (Staff/Owner)
+- `PUT /api/courts/{id}/status` - Cập nhật trạng thái sân (Owner)
+- `DELETE /api/courts/{id}` - Xóa sân (Owner)
 
-### Bookings
-- `POST /api/bookings` - Đặt sân (member+)
-- `GET /api/bookings/my` - Booking của tôi (member+)
-- `GET /api/bookings` - Tất cả booking (staff+)
-- `PUT /api/bookings/{id}/status` - Cập nhật trạng thái (staff+)
+### Đặt sân
+- `POST /api/bookings` - Đặt sân (Member+)
+- `GET /api/bookings` - Xem danh sách đặt sân
+- `PUT /api/bookings/{id}/status` - Cập nhật trạng thái (Staff+)
+- `DELETE /api/bookings/{id}` - Hủy đặt sân
 
 ### Reviews
-- `GET /api/reviews/public/court/{courtId}` - Đánh giá sân (public)
-- `POST /api/reviews` - Tạo đánh giá (member+)
-- `PUT /api/reviews/{id}` - Cập nhật đánh giá (member)
-- `DELETE /api/reviews/{id}` - Xóa đánh giá (member)
+- `GET /api/reviews/public/court/{courtId}` - Xem reviews của sân
+- `POST /api/reviews` - Viết review (Member+)
 
-### Admin (Owner only)
-- `GET /api/admin/users` - Quản lý users
-- `PUT /api/admin/users/{id}/role` - Cập nhật role
-- `PUT /api/admin/users/{id}/status` - Suspend/Active user
+### Quản lý người dùng (Admin)
+- `GET /api/admin/users` - Danh sách người dùng (Owner)
+- `PUT /api/admin/users/{id}/role` - Thay đổi vai trò (Owner)
+- `PUT /api/admin/users/{id}/status` - Suspend/Resume (Owner)
 
-## Cấu trúc dự án
+## 🗂️ Cấu trúc dự án
 
 ```
 badminton-booking/
-├── backend/
-│   ├── src/main/java/com/badminton/booking/
-│   │   ├── entity/          # Database entities
-│   │   ├── dto/             # Data Transfer Objects
-│   │   ├── repository/      # JPA Repositories
-│   │   ├── service/         # Service interfaces
-│   │   ├── serviceimpl/     # Service implementations
-│   │   ├── controller/      # REST Controllers
-│   │   ├── config/          # Configuration classes
-│   │   └── security/        # Security configurations
-│   ├── src/main/resources/
-│   │   └── application.properties
-│   └── pom.xml
-├── frontend/
-│   ├── src/
-│   │   ├── components/      # React components
-│   │   ├── pages/           # Page components
-│   │   ├── services/        # API services
-│   │   ├── contexts/        # React contexts
-│   │   ├── types/           # TypeScript types
-│   │   └── utils/           # Utility functions
+├── backend/                 # Spring Boot application
+│   ├── src/main/java/
+│   │   └── com/badminton/booking/
+│   │       ├── entity/      # JPA Entities
+│   │       ├── repository/  # Data repositories
+│   │       ├── service/     # Business logic
+│   │       ├── controller/  # REST controllers
+│   │       ├── dto/         # Data Transfer Objects
+│   │       └── config/      # Configurations
+│   └── src/main/resources/
+│       └── application.properties
+├── frontend/               # React application
 │   ├── public/
+│   ├── src/
+│   │   ├── components/     # Reusable components
+│   │   ├── pages/          # Page components
+│   │   ├── services/       # API services
+│   │   ├── contexts/       # React contexts
+│   │   ├── types/          # TypeScript types
+│   │   └── utils/          # Utility functions
 │   └── package.json
-├── start-backend.sh
-├── start-frontend.sh
+├── docker-compose.yml      # SQL Server container
+├── setup-sqlserver.sh      # SQL Server setup script
+├── start-backend.sh        # Backend startup script
+├── start-frontend.sh       # Frontend startup script
 └── README.md
 ```
 
-## Tài khoản mặc định
+## 🧪 Tài khoản mặc định
 
-Sau khi chạy ứng dụng lần đầu, bạn có thể:
+Sau khi chạy ứng dụng, bạn có thể tạo tài khoản hoặc sử dụng API để tạo tài khoản Owner đầu tiên.
 
-1. **Đăng ký tài khoản mới** qua giao diện web
-2. **Tạo tài khoản Owner** qua database để quản lý hệ thống
+## 🛠️ Khắc phục sự cố
 
-## Đóng góp
+### Backend không kết nối được database
+```bash
+# Kiểm tra SQL Server container
+docker ps
+
+# Xem logs SQL Server
+docker logs badminton_sqlserver
+
+# Restart SQL Server
+docker-compose restart
+```
+
+### Frontend không call được API
+- Kiểm tra CORS configuration trong `application.properties`
+- Đảm bảo backend đang chạy trên port 8080
+- Kiểm tra URL trong `frontend/src/services/api.ts`
+
+### Port đã được sử dụng
+```bash
+# Kiểm tra port đang sử dụng
+sudo netstat -tulpn | grep :8080
+sudo netstat -tulpn | grep :3000
+sudo netstat -tulpn | grep :1433
+
+# Kill process nếu cần
+sudo kill -9 <PID>
+```
+
+## 🤝 Đóng góp
 
 1. Fork repository
-2. Tạo feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
+2. Tạo feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
 5. Tạo Pull Request
 
-## License
+## 📄 License
 
-Dự án này được phân phối dưới giấy phép MIT.
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## 📞 Liên hệ
+
+Email: support@badmintonbooking.com
+Website: https://badmintonbooking.com
