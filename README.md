@@ -66,6 +66,26 @@ Hệ thống quản lý đặt sân cầu lông với đầy đủ tính năng c
 
 ### 🐳 Bước 1: Cài đặt SQL Server
 
+#### 🪟 **Trên Windows:**
+
+```batch
+:: Chạy script tự động
+setup-sqlserver-windows.bat
+```
+
+**Hoặc cài đặt thủ công:**
+
+1. **Cài đặt Docker Desktop**: 
+   - Tải từ: https://www.docker.com/products/docker-desktop
+   - Cài đặt và khởi động Docker Desktop
+
+2. **Chạy SQL Server container:**
+```cmd
+docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Password123" -p 1433:1433 --name badminton_sqlserver -d mcr.microsoft.com/mssql/server:2019-latest
+```
+
+#### 🐧 **Trên Linux:**
+
 ```bash
 # Cài đặt Docker và SQL Server tự động
 ./setup-sqlserver.sh
@@ -93,6 +113,13 @@ docker ps
 
 ### ⚙️ Bước 2: Chạy Backend
 
+#### 🪟 **Trên Windows:**
+```cmd
+cd backend
+mvnw.cmd clean spring-boot:run
+```
+
+#### 🐧 **Trên Linux:**
 ```bash
 cd backend
 ./mvnw clean spring-boot:run
@@ -100,6 +127,14 @@ cd backend
 
 ### 🎨 Bước 3: Chạy Frontend
 
+#### 🪟 **Trên Windows:**
+```cmd
+cd frontend
+npm install
+npm run dev
+```
+
+#### 🐧 **Trên Linux:**
 ```bash
 cd frontend
 npm install
@@ -108,6 +143,16 @@ npm run dev
 
 ### 🔧 Hoặc sử dụng scripts tự động
 
+#### 🪟 **Trên Windows:**
+```batch
+:: Command Prompt 1 - Backend
+start-backend-windows.bat
+
+:: Command Prompt 2 - Frontend
+start-frontend-windows.bat
+```
+
+#### 🐧 **Trên Linux:**
 ```bash
 # Terminal 1 - Backend
 ./start-backend.sh
