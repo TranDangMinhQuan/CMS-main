@@ -1,38 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-const courts = [
-  {
-    id: 1,
-    name: "Sân A - Quận 1",
-    image: "https://cdn.tuoitre.vn/thumb_w/730/471584752817336320/2023/7/6/san-cau-long-16886087164821647664781-1688608954969820211575.jpg",
-    price: 120000,
-    location: "Quận 1, TP.HCM",
-    rating: 4.8,
-    availableSlots: ["08:00-09:30", "14:00-15:30", "19:00-20:30"],
-    distance: "1.2km"
-  },
-  {
-    id: 2,
-    name: "Sân B - Quận 5",
-    image: "https://statics.vinpearl.com/san-cau-long-ha-noi-1_1682561731.jpg",
-    price: 100000,
-    location: "Quận 5, TP.HCM",
-    rating: 4.6,
-    availableSlots: ["09:00-10:30", "16:00-17:30", "20:00-21:30"],
-    distance: "2.1km"
-  },
-  {
-    id: 3,
-    name: "Sân C - Bình Thạnh",
-    image: "https://top10tphcm.com/wp-content/uploads/2020/09/San-cau-long-Binh-Quoi.jpg",
-    price: 150000,
-    location: "Bình Thạnh, TP.HCM",
-    rating: 4.9,
-    availableSlots: ["07:00-08:30", "15:00-16:30", "18:00-19:30"],
-    distance: "3.5km"
-  },
-];
+import { courtAPI } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 const CourtCard = ({ id, name, image, price, location, rating, availableSlots, distance }) => {
   return (
@@ -95,10 +64,32 @@ const CourtCard = ({ id, name, image, price, location, rating, availableSlots, d
 
 function HomePage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [courts, setCourts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { user, logout } = useAuth();
+
+  useEffect(() => {
+    fetchCourts();
+  }, []);
+
+  const fetchCourts = async () => {
+    try {
+      setLoading(true);
+      const courtsData = await courtAPI.getAllCourts();
+      setCourts(courtsData);
+    } catch (err) {
+      setError('Không thể tải dữ liệu sân. Vui lòng thử lại sau.');
+      console.error('Error fetching courts:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredCourts = courts.filter(court =>
     court.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    court.location.toLowerCase().includes(searchTerm.toLowerCase())
+    court.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    court.district.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -120,8 +111,22 @@ function HomePage() {
               <Link to="/booking" className="px-4 py-2 rounded-lg font-medium text-gray-600 hover:text-blue-600 transition">📅 Đặt sân</Link>
               <Link to="/history" className="px-4 py-2 rounded-lg font-medium text-gray-600 hover:text-blue-600 transition">📋 Lịch sử</Link>
               <Link to="/about" className="px-4 py-2 rounded-lg font-medium text-gray-600 hover:text-blue-600 transition">ℹ️ Về chúng tôi</Link>
-              <Link to="/login" className="px-4 py-2 rounded-lg font-medium text-blue-600 hover:underline transition">🔐 Đăng nhập</Link>
-              <Link to="/signup" className="px-4 py-2 rounded-lg font-medium text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition">📝 Đăng ký</Link>
+              {user ? (
+                <div className="flex items-center space-x-2">
+                  <span className="px-4 py-2 text-gray-700">👋 Xin chào, {user.fullName || user.email}</span>
+                  <button 
+                    onClick={logout}
+                    className="px-4 py-2 rounded-lg font-medium text-red-600 hover:text-red-800 transition"
+                  >
+                    🚪 Đăng xuất
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Link to="/login" className="px-4 py-2 rounded-lg font-medium text-blue-600 hover:underline transition">🔐 Đăng nhập</Link>
+                  <Link to="/signup" className="px-4 py-2 rounded-lg font-medium text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition">📝 Đăng ký</Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -197,18 +202,50 @@ function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredCourts.map((court) => (
-            <CourtCard key={court.id} {...court} />
-          ))}
-        </div>
-
-        {filteredCourts.length === 0 && (
+        {loading ? (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">Không tìm thấy sân nào</h3>
-            <p className="text-gray-500">Vui lòng thử lại với từ khóa khác</p>
+            <div className="text-6xl mb-4">⏳</div>
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">Đang tải dữ liệu...</h3>
+            <p className="text-gray-500">Vui lòng chờ trong giây lát</p>
           </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">❌</div>
+            <h3 className="text-xl font-semibold text-red-600 mb-2">Có lỗi xảy ra</h3>
+            <p className="text-gray-500 mb-4">{error}</p>
+            <button 
+              onClick={fetchCourts}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            >
+              Thử lại
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredCourts.map((court) => (
+                <CourtCard 
+                  key={court.id} 
+                  id={court.id}
+                  name={court.name}
+                  image={court.imageUrl}
+                  price={court.pricePerHour}
+                  location={`${court.district}, ${court.city}`}
+                  rating={court.rating}
+                  availableSlots={court.availableSlots || ["Liên hệ để biết lịch trống"]}
+                  distance="Đang tính..."
+                />
+              ))}
+            </div>
+
+            {filteredCourts.length === 0 && !loading && (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-semibold text-gray-600 mb-2">Không tìm thấy sân nào</h3>
+                <p className="text-gray-500">Vui lòng thử lại với từ khóa khác</p>
+              </div>
+            )}
+          </>
         )}
       </div>
 
