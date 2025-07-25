@@ -34,4 +34,7 @@ public class BookingRequestDTO {
 
     @Size(max = 500, message = "Notes must not exceed 500 characters")
     private String notes;
+
+    @Size(max = 20, message = "Coupon code must not exceed 20 characters")
+    private String couponCode; // Optional coupon code for discount
 }

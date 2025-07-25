@@ -1,7 +1,11 @@
 package com.example.cmssystem.service;
 
 import com.example.cmssystem.entity.court.Court;
+import com.example.cmssystem.entity.coupon.Coupon;
+import com.example.cmssystem.enums.CouponStatus;
+import com.example.cmssystem.enums.CouponType;
 import com.example.cmssystem.enums.Status;
+import com.example.cmssystem.repository.CouponRepository;
 import com.example.cmssystem.repository.CourtRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +14,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -18,13 +23,24 @@ import java.util.List;
 public class DataInitializationService implements ApplicationRunner {
     
     private final CourtRepository courtRepository;
+    private final CouponRepository couponRepository;
     
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        if (courtRepository.count() == 0) {
-            log.info("Initializing sample court data...");
-            initializeSampleCourts();
-            log.info("Sample court data initialized successfully!");
+        try {
+            if (courtRepository.findAll().isEmpty()) {
+                log.info("Initializing sample court data...");
+                initializeSampleCourts();
+                log.info("Sample court data initialized successfully!");
+            }
+            
+            if (couponRepository.findAll().isEmpty()) {
+                log.info("Initializing sample coupon data...");
+                initializeSampleCoupons();
+                log.info("Sample coupon data initialized successfully!");
+            }
+        } catch (Exception e) {
+            log.error("Error during data initialization", e);
         }
     }
     
@@ -131,5 +147,87 @@ public class DataInitializationService implements ApplicationRunner {
         court.setIsActive(true);
         court.setStatus(Status.ACTIVE);
         return court;
+    }
+    
+    private void initializeSampleCoupons() {
+        List<Coupon> sampleCoupons = List.of(
+            createCoupon(
+                "WELCOME10",
+                "Welcome Discount",
+                "10% discount for new customers",
+                CouponType.PERCENTAGE,
+                new BigDecimal("10"),
+                new BigDecimal("50000"), // Minimum order 50k
+                new BigDecimal("20000"), // Max discount 20k
+                LocalDate.now(),
+                LocalDate.now().plusMonths(3),
+                100, // Total usage limit
+                3    // Per user limit
+            ),
+            createCoupon(
+                "SAVE50K",
+                "50K Discount",
+                "Fixed 50,000 VND discount on bookings",
+                CouponType.FIXED_AMOUNT,
+                new BigDecimal("50000"),
+                new BigDecimal("200000"), // Minimum order 200k
+                null, // No max discount for fixed amount
+                LocalDate.now(),
+                LocalDate.now().plusMonths(2),
+                50,
+                1
+            ),
+            createCoupon(
+                "WEEKEND15",
+                "Weekend Special",
+                "15% discount for weekend bookings",
+                CouponType.PERCENTAGE,
+                new BigDecimal("15"),
+                new BigDecimal("100000"),
+                new BigDecimal("50000"),
+                LocalDate.now(),
+                LocalDate.now().plusMonths(1),
+                200,
+                5
+            ),
+            createCoupon(
+                "STUDENT20",
+                "Student Discount",
+                "20% discount for students",
+                CouponType.PERCENTAGE,
+                new BigDecimal("20"),
+                new BigDecimal("30000"),
+                new BigDecimal("30000"),
+                LocalDate.now(),
+                LocalDate.now().plusMonths(6),
+                500,
+                10
+            )
+        );
+        
+        couponRepository.saveAll(sampleCoupons);
+    }
+    
+    private Coupon createCoupon(String code, String name, String description, 
+                               CouponType type, BigDecimal value, 
+                               BigDecimal minimumOrderAmount, BigDecimal maximumDiscountAmount,
+                               LocalDate validFrom, LocalDate validTo,
+                               Integer usageLimit, Integer usageLimitPerUser) {
+        Coupon coupon = new Coupon();
+        coupon.setCode(code);
+        coupon.setName(name);
+        coupon.setDescription(description);
+        coupon.setType(type);
+        coupon.setValue(value);
+        coupon.setMinimumOrderAmount(minimumOrderAmount);
+        coupon.setMaximumDiscountAmount(maximumDiscountAmount);
+        coupon.setValidFrom(validFrom);
+        coupon.setValidTo(validTo);
+        coupon.setUsageLimit(usageLimit);
+        coupon.setUsageLimitPerUser(usageLimitPerUser);
+        coupon.setCurrentUsageCount(0);
+        coupon.setIsActive(true);
+        coupon.setStatus(CouponStatus.ACTIVE);
+        return coupon;
     }
 }
