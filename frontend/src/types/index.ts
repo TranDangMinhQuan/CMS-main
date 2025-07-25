@@ -4,18 +4,19 @@ export interface User {
   email: string;
   fullName: string;
   phoneNumber?: string;
-  role: UserRole;
-  isActive: boolean;
+  role: 'GUEST' | 'MEMBER' | 'STAFF' | 'OWNER';
+  status: 'ACTIVE' | 'SUSPENDED';
   createdAt: string;
   updatedAt: string;
 }
 
 export interface Court {
   id: number;
-  name: string;
+  courtName: string;
   description?: string;
-  hourlyRate: number;
-  status: CourtStatus;
+  pricePerHour: number;
+  status: 'AVAILABLE' | 'UNAVAILABLE' | 'MAINTENANCE';
+  imageUrl?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -27,7 +28,8 @@ export interface Booking {
   startTime: string;
   endTime: string;
   totalAmount: number;
-  status: BookingStatus;
+  status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
+  paymentMethod?: 'ONLINE' | 'OFFLINE';
   notes?: string;
   createdAt: string;
   updatedAt: string;
@@ -40,33 +42,15 @@ export interface Review {
   rating: number;
   comment?: string;
   createdAt: string;
+  updatedAt: string;
 }
 
-export interface Payment {
-  id: number;
-  booking: Booking;
-  amount: number;
-  paymentMethod: PaymentMethod;
-  status: PaymentStatus;
-  transactionId?: string;
-  paidAt?: string;
-  createdAt: string;
-}
-
-export interface AuthResponse {
-  token: string;
-  username: string;
-  email: string;
-  fullName: string;
-  role: UserRole;
-}
-
-export interface LoginRequest {
+export interface LoginCredentials {
   username: string;
   password: string;
 }
 
-export interface RegisterRequest {
+export interface RegisterData {
   username: string;
   email: string;
   password: string;
@@ -74,44 +58,12 @@ export interface RegisterRequest {
   phoneNumber?: string;
 }
 
-export interface BookingRequest {
+export interface BookingCreate {
   courtId: number;
   startTime: string;
   endTime: string;
+  paymentMethod?: 'ONLINE' | 'OFFLINE';
   notes?: string;
-  couponCode?: string;
+  couponCodes?: string[];
   racketQuantity?: number;
-  paymentMethod: PaymentMethod;
-}
-
-export enum UserRole {
-  GUEST = 'GUEST',
-  MEMBER = 'MEMBER',
-  STAFF = 'STAFF',
-  OWNER = 'OWNER'
-}
-
-export enum CourtStatus {
-  AVAILABLE = 'AVAILABLE',
-  UNAVAILABLE = 'UNAVAILABLE',
-  MAINTENANCE = 'MAINTENANCE'
-}
-
-export enum BookingStatus {
-  PENDING = 'PENDING',
-  CONFIRMED = 'CONFIRMED',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED'
-}
-
-export enum PaymentMethod {
-  ONLINE = 'ONLINE',
-  CASH = 'CASH'
-}
-
-export enum PaymentStatus {
-  PENDING = 'PENDING',
-  PAID = 'PAID',
-  FAILED = 'FAILED',
-  REFUNDED = 'REFUNDED'
 }

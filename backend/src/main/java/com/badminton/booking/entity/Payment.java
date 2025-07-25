@@ -1,10 +1,10 @@
 package com.badminton.booking.entity;
 
-import com.badminton.booking.enums.PaymentMethod;
-import com.badminton.booking.enums.PaymentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,35 +16,52 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id", nullable = false)
     private Booking booking;
 
-    @NotNull(message = "Amount is required")
-    @Positive(message = "Amount must be positive")
-    @Column(name = "amount", precision = 10, scale = 2)
+    @NotNull
+    @Positive
+    @Column(precision = 10, scale = 2)
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_method")
+    @Column(length = 20)
     private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     private PaymentStatus status = PaymentStatus.PENDING;
 
-    @Column(name = "transaction_id")
+    @Column(length = 100)
     private String transactionId;
 
-    @Column(name = "paid_at")
-    private LocalDateTime paidAt;
+    @Column(length = 500)
+    private String notes;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
+    public enum PaymentMethod {
+        CASH, CREDIT_CARD, BANK_TRANSFER, E_WALLET
+    }
+
+    public enum PaymentStatus {
+        PENDING, COMPLETED, FAILED, REFUNDED
+    }
 
     // Constructors
     public Payment() {}
 
-    public Payment(Booking booking, BigDecimal amount, PaymentMethod paymentMethod) {
+    public Payment(User user, Booking booking, BigDecimal amount, PaymentMethod paymentMethod) {
+        this.user = user;
         this.booking = booking;
         this.amount = amount;
         this.paymentMethod = paymentMethod;
@@ -57,6 +74,14 @@ public class Payment {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Booking getBooking() {
@@ -99,12 +124,12 @@ public class Payment {
         this.transactionId = transactionId;
     }
 
-    public LocalDateTime getPaidAt() {
-        return paidAt;
+    public String getNotes() {
+        return notes;
     }
 
-    public void setPaidAt(LocalDateTime paidAt) {
-        this.paidAt = paidAt;
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -113,5 +138,13 @@ public class Payment {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

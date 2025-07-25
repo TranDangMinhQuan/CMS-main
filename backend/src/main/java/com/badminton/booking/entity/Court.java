@@ -1,13 +1,15 @@
 package com.badminton.booking.entity;
 
-import com.badminton.booking.enums.CourtStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "courts")
@@ -16,33 +18,48 @@ public class Court {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Court name is required")
+    @NotBlank
     @Column(unique = true)
-    private String name;
+    private String courtName;
 
+    @Column(length = 500)
     private String description;
 
-    @NotNull(message = "Hourly rate is required")
-    @Positive(message = "Hourly rate must be positive")
-    @Column(name = "hourly_rate", precision = 10, scale = 2)
-    private BigDecimal hourlyRate;
+    @NotNull
+    @Positive
+    @Column(precision = 10, scale = 2)
+    private BigDecimal pricePerHour;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     private CourtStatus status = CourtStatus.AVAILABLE;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(length = 500)
+    private String imageUrl;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "court", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Booking> bookings;
+
+    @OneToMany(mappedBy = "court", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Review> reviews;
+
+    public enum CourtStatus {
+        AVAILABLE, UNAVAILABLE, MAINTENANCE
+    }
 
     // Constructors
     public Court() {}
 
-    public Court(String name, String description, BigDecimal hourlyRate) {
-        this.name = name;
+    public Court(String courtName, String description, BigDecimal pricePerHour) {
+        this.courtName = courtName;
         this.description = description;
-        this.hourlyRate = hourlyRate;
+        this.pricePerHour = pricePerHour;
     }
 
     // Getters and Setters
@@ -54,12 +71,12 @@ public class Court {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getCourtName() {
+        return courtName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCourtName(String courtName) {
+        this.courtName = courtName;
     }
 
     public String getDescription() {
@@ -70,12 +87,12 @@ public class Court {
         this.description = description;
     }
 
-    public BigDecimal getHourlyRate() {
-        return hourlyRate;
+    public BigDecimal getPricePerHour() {
+        return pricePerHour;
     }
 
-    public void setHourlyRate(BigDecimal hourlyRate) {
-        this.hourlyRate = hourlyRate;
+    public void setPricePerHour(BigDecimal pricePerHour) {
+        this.pricePerHour = pricePerHour;
     }
 
     public CourtStatus getStatus() {
@@ -84,6 +101,14 @@ public class Court {
 
     public void setStatus(CourtStatus status) {
         this.status = status;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -102,8 +127,19 @@ public class Court {
         this.updatedAt = updatedAt;
     }
 
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
+    public Set<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(Set<Booking> bookings) {
+        this.bookings = bookings;
+    }
+
+    public Set<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(Set<Review> reviews) {
+        this.reviews = reviews;
     }
 }

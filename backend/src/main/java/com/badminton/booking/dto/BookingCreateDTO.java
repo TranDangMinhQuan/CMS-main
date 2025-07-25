@@ -1,27 +1,30 @@
 package com.badminton.booking.dto;
 
-import com.badminton.booking.enums.PaymentMethod;
+import com.badminton.booking.entity.Booking;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
-public class BookingRequest {
-    @NotNull(message = "Court ID is required")
+public class BookingCreateDTO {
+    @NotNull
     private Long courtId;
 
-    @NotNull(message = "Start time is required")
+    @NotNull
     private LocalDateTime startTime;
 
-    @NotNull(message = "End time is required")
+    @NotNull
     private LocalDateTime endTime;
 
+    private Booking.PaymentMethod paymentMethod;
     private String notes;
-    private String couponCode;
-    private Integer racketQuantity = 0;
-    private PaymentMethod paymentMethod = PaymentMethod.CASH;
+    private List<String> couponCodes;
+    private Integer racketQuantity;
 
     // Constructors
-    public BookingRequest() {}
+    public BookingCreateDTO() {}
 
     // Getters and Setters
     public Long getCourtId() {
@@ -48,6 +51,14 @@ public class BookingRequest {
         this.endTime = endTime;
     }
 
+    public Booking.PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(Booking.PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
     public String getNotes() {
         return notes;
     }
@@ -56,12 +67,12 @@ public class BookingRequest {
         this.notes = notes;
     }
 
-    public String getCouponCode() {
-        return couponCode;
+    public List<String> getCouponCodes() {
+        return couponCodes;
     }
 
-    public void setCouponCode(String couponCode) {
-        this.couponCode = couponCode;
+    public void setCouponCodes(List<String> couponCodes) {
+        this.couponCodes = couponCodes;
     }
 
     public Integer getRacketQuantity() {
@@ -70,13 +81,5 @@ public class BookingRequest {
 
     public void setRacketQuantity(Integer racketQuantity) {
         this.racketQuantity = racketQuantity;
-    }
-
-    public PaymentMethod getPaymentMethod() {
-        return paymentMethod;
-    }
-
-    public void setPaymentMethod(PaymentMethod paymentMethod) {
-        this.paymentMethod = paymentMethod;
     }
 }

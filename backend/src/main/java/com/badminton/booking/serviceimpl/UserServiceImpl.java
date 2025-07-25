@@ -1,151 +1,143 @@
 package com.badminton.booking.serviceimpl;
 
-import com.badminton.booking.config.JwtUtil;
-import com.badminton.booking.dto.AuthResponse;
-import com.badminton.booking.dto.LoginRequest;
-import com.badminton.booking.dto.RegisterRequest;
 import com.badminton.booking.entity.User;
-import com.badminton.booking.enums.UserRole;
+import com.badminton.booking.dto.UserRegistrationDTO;
+import com.badminton.booking.dto.UserUpdateDTO;
 import com.badminton.booking.repository.UserRepository;
 import com.badminton.booking.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService, UserDetailsService {
+@Transactional
+public class UserServiceImpl implements UserService {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public AuthResponse login(LoginRequest loginRequest) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
-
-        User user = getUserByUsername(loginRequest.getUsername());
-        UserDetails userDetails = loadUserByUsername(loginRequest.getUsername());
-        String token = jwtUtil.generateToken(userDetails);
-
-        return new AuthResponse(token, user.getUsername(), user.getEmail(), user.getFullName(), user.getRole());
-    }
-
-    @Override
-    public AuthResponse register(RegisterRequest registerRequest) {
-        if (userRepository.existsByUsername(registerRequest.getUsername())) {
-            throw new RuntimeException("Username already exists");
+    public User createUser(UserRegistrationDTO userRegistrationDTO) {
+        if (existsByUsername(userRegistrationDTO.getUsername())) {
+            throw new RuntimeException("Username is already taken!");
         }
-        if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new RuntimeException("Email already exists");
+        if (existsByEmail(userRegistrationDTO.getEmail())) {
+            throw new RuntimeException("Email is already in use!");
         }
 
-        User user = new User(
-                registerRequest.getUsername(),
-                registerRequest.getEmail(),
-                passwordEncoder.encode(registerRequest.getPassword()),
-                registerRequest.getFullName(),
-                UserRole.MEMBER
-        );
-        user.setPhoneNumber(registerRequest.getPhoneNumber());
-        
-        userRepository.save(user);
+        User user = new User();
+        user.setUsername(userRegistrationDTO.getUsername());
+        user.setEmail(userRegistrationDTO.getEmail());
+        user.setPassword(passwordEncoder.encode(userRegistrationDTO.getPassword()));
+        user.setFullName(userRegistrationDTO.getFullName());
+        user.setPhoneNumber(userRegistrationDTO.getPhoneNumber());
 
-        UserDetails userDetails = loadUserByUsername(user.getUsername());
-        String token = jwtUtil.generateToken(userDetails);
-
-        return new AuthResponse(token, user.getUsername(), user.getEmail(), user.getFullName(), user.getRole());
-    }
-
-    @Override
-    public User getUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-    }
-
-    @Override
-    public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-    }
-
-    @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    @Override
-    public List<User> getUsersByRole(UserRole role) {
-        return userRepository.findByRole(role);
-    }
-
-    @Override
-    public User createStaff(RegisterRequest registerRequest) {
-        if (userRepository.existsByUsername(registerRequest.getUsername())) {
-            throw new RuntimeException("Username already exists");
-        }
-        if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new RuntimeException("Email already exists");
-        }
-
-        User user = new User(
-                registerRequest.getUsername(),
-                registerRequest.getEmail(),
-                passwordEncoder.encode(registerRequest.getPassword()),
-                registerRequest.getFullName(),
-                UserRole.STAFF
-        );
-        user.setPhoneNumber(registerRequest.getPhoneNumber());
-        
         return userRepository.save(user);
     }
 
     @Override
-    public User updateUserStatus(Long userId, boolean isActive) {
-        User user = getUserById(userId);
-        user.setActive(isActive);
+    public User updateUser(Long id, UserUpdateDTO userUpdateDTO) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+
+        if (userUpdateDTO.getEmail() != null) {
+            user.setEmail(userUpdateDTO.getEmail());
+        }
+        if (userUpdateDTO.getFullName() != null) {
+            user.setFullName(userUpdateDTO.getFullName());
+        }
+        if (userUpdateDTO.getPhoneNumber() != null) {
+            user.setPhoneNumber(userUpdateDTO.getPhoneNumber());
+        }
+
         return userRepository.save(user);
     }
 
     @Override
-    public User updateUserRole(Long userId, UserRole role) {
-        User user = getUserById(userId);
+    public User updateUserRole(Long id, User.Role role) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
         user.setRole(role);
         return userRepository.save(user);
     }
 
     @Override
-    public List<User> getActiveStaff() {
-        return userRepository.findByRoleAndActive(UserRole.STAFF, true);
+    public User updateUserStatus(Long id, User.UserStatus status) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        user.setStatus(status);
+        return userRepository.save(user);
     }
 
     @Override
-    public List<User> getActiveMembers() {
-        return userRepository.findByRoleAndActive(UserRole.MEMBER, true);
+    @Transactional(readOnly = true)
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getUsersByRole(User.Role role) {
+        return userRepository.findByRole(role);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getUsersByStatus(User.UserStatus status) {
+        return userRepository.findByStatus(status);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> searchUsersByName(String name) {
+        return userRepository.findByNameContaining(name);
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User not found with id: " + id);
+        }
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 }

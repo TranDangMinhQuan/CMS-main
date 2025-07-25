@@ -1,7 +1,6 @@
 package com.badminton.booking.repository;
 
 import com.badminton.booking.entity.User;
-import com.badminton.booking.enums.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,11 +13,13 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
-    boolean existsByUsername(String username);
-    boolean existsByEmail(String email);
-    List<User> findByRole(UserRole role);
-    List<User> findByIsActive(boolean isActive);
+    Boolean existsByUsername(String username);
+    Boolean existsByEmail(String email);
     
-    @Query("SELECT u FROM User u WHERE u.role = :role AND u.isActive = :isActive")
-    List<User> findByRoleAndActive(@Param("role") UserRole role, @Param("isActive") boolean isActive);
+    List<User> findByRole(User.Role role);
+    List<User> findByStatus(User.UserStatus status);
+    List<User> findByRoleAndStatus(User.Role role, User.UserStatus status);
+    
+    @Query("SELECT u FROM User u WHERE u.fullName LIKE %:name% OR u.username LIKE %:name%")
+    List<User> findByNameContaining(@Param("name") String name);
 }

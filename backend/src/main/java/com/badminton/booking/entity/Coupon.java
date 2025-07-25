@@ -4,9 +4,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "coupons")
@@ -15,47 +18,71 @@ public class Coupon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Coupon code is required")
+    @NotBlank
     @Column(unique = true)
     private String code;
 
-    @NotBlank(message = "Description is required")
+    @NotBlank
+    private String name;
+
+    @Column(length = 500)
     private String description;
 
-    @NotNull(message = "Discount percentage is required")
-    @Positive(message = "Discount percentage must be positive")
-    @Column(name = "discount_percentage", precision = 5, scale = 2)
-    private BigDecimal discountPercentage;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private CouponType type;
 
-    @Column(name = "max_discount_amount", precision = 10, scale = 2)
-    private BigDecimal maxDiscountAmount;
+    @NotNull
+    @Positive
+    @Column(precision = 10, scale = 2)
+    private BigDecimal value; // Percentage or fixed amount
 
-    @NotNull(message = "Valid from date is required")
-    @Column(name = "valid_from")
+    @Column(precision = 10, scale = 2)
+    private BigDecimal minimumAmount; // Minimum booking amount to apply coupon
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal maximumDiscount; // Maximum discount for percentage coupons
+
+    @NotNull
     private LocalDateTime validFrom;
 
-    @NotNull(message = "Valid until date is required")
-    @Column(name = "valid_until")
+    @NotNull
     private LocalDateTime validUntil;
 
-    @Column(name = "usage_limit")
+    @Positive
     private Integer usageLimit;
 
-    @Column(name = "used_count")
-    private Integer usedCount = 0;
+    private Integer usageCount = 0;
 
-    private boolean isActive = true;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private CouponStatus status = CouponStatus.ACTIVE;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
+    @ManyToMany(mappedBy = "coupons")
+    private Set<Booking> bookings;
+
+    public enum CouponType {
+        PERCENTAGE, FIXED_AMOUNT
+    }
+
+    public enum CouponStatus {
+        ACTIVE, INACTIVE, EXPIRED
+    }
 
     // Constructors
     public Coupon() {}
 
-    public Coupon(String code, String description, BigDecimal discountPercentage, LocalDateTime validFrom, LocalDateTime validUntil) {
+    public Coupon(String code, String name, CouponType type, BigDecimal value, LocalDateTime validFrom, LocalDateTime validUntil) {
         this.code = code;
-        this.description = description;
-        this.discountPercentage = discountPercentage;
+        this.name = name;
+        this.type = type;
+        this.value = value;
         this.validFrom = validFrom;
         this.validUntil = validUntil;
     }
@@ -77,6 +104,14 @@ public class Coupon {
         this.code = code;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -85,20 +120,36 @@ public class Coupon {
         this.description = description;
     }
 
-    public BigDecimal getDiscountPercentage() {
-        return discountPercentage;
+    public CouponType getType() {
+        return type;
     }
 
-    public void setDiscountPercentage(BigDecimal discountPercentage) {
-        this.discountPercentage = discountPercentage;
+    public void setType(CouponType type) {
+        this.type = type;
     }
 
-    public BigDecimal getMaxDiscountAmount() {
-        return maxDiscountAmount;
+    public BigDecimal getValue() {
+        return value;
     }
 
-    public void setMaxDiscountAmount(BigDecimal maxDiscountAmount) {
-        this.maxDiscountAmount = maxDiscountAmount;
+    public void setValue(BigDecimal value) {
+        this.value = value;
+    }
+
+    public BigDecimal getMinimumAmount() {
+        return minimumAmount;
+    }
+
+    public void setMinimumAmount(BigDecimal minimumAmount) {
+        this.minimumAmount = minimumAmount;
+    }
+
+    public BigDecimal getMaximumDiscount() {
+        return maximumDiscount;
+    }
+
+    public void setMaximumDiscount(BigDecimal maximumDiscount) {
+        this.maximumDiscount = maximumDiscount;
     }
 
     public LocalDateTime getValidFrom() {
@@ -125,20 +176,20 @@ public class Coupon {
         this.usageLimit = usageLimit;
     }
 
-    public Integer getUsedCount() {
-        return usedCount;
+    public Integer getUsageCount() {
+        return usageCount;
     }
 
-    public void setUsedCount(Integer usedCount) {
-        this.usedCount = usedCount;
+    public void setUsageCount(Integer usageCount) {
+        this.usageCount = usageCount;
     }
 
-    public boolean isActive() {
-        return isActive;
+    public CouponStatus getStatus() {
+        return status;
     }
 
-    public void setActive(boolean active) {
-        isActive = active;
+    public void setStatus(CouponStatus status) {
+        this.status = status;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -147,5 +198,21 @@ public class Coupon {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Set<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(Set<Booking> bookings) {
+        this.bookings = bookings;
     }
 }

@@ -1,80 +1,132 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { Court } from '../../types';
+import { courtsAPI } from '../../services/api';
 import './HomePage.module.css';
 
 const HomePage: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const [featuredCourts, setFeaturedCourts] = useState<Court[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeaturedCourts = async () => {
+      try {
+        const courts = await courtsAPI.getAllCourtsPublic();
+        setFeaturedCourts(courts.slice(0, 3)); // Show first 3 courts
+      } catch (error) {
+        console.error('Error fetching courts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeaturedCourts();
+  }, []);
 
   return (
-    <div className="homepage">
-      <div className="hero-section">
+    <div className="home-page">
+      {/* Hero Section */}
+      <section className="hero">
         <div className="hero-content">
-          <h1 className="hero-title">🏸 Badminton Court Booking System</h1>
-          <p className="hero-subtitle">
-            Book your favorite badminton court online and enjoy playing with friends!
+          <h1 className="hero-title">Đặt Sân Cầu Lông Dễ Dàng</h1>
+          <p className="hero-description">
+            Hệ thống đặt sân cầu lông hiện đại, tiện lợi và nhanh chóng. 
+            Tìm kiếm sân phù hợp, xem đánh giá từ người dùng và đặt sân ngay hôm nay!
           </p>
           <div className="hero-actions">
             <Link to="/courts" className="btn btn-primary btn-large">
-              View Courts
+              Xem tất cả sân
             </Link>
-            {!isAuthenticated && (
-              <Link to="/register" className="btn btn-secondary btn-large">
-                Join Now
-              </Link>
-            )}
+            <Link to="/register" className="btn btn-secondary btn-large">
+              Đăng ký ngay
+            </Link>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="features-section">
+      {/* Features Section */}
+      <section className="features">
         <div className="container">
-          <h2 className="section-title">Why Choose Our Courts?</h2>
+          <h2 className="section-title">Tại sao chọn chúng tôi?</h2>
           <div className="features-grid">
             <div className="feature-card">
-              <div className="feature-icon">🏆</div>
-              <h3>Premium Quality Courts</h3>
-              <p>Professional-grade badminton courts with proper lighting and ventilation</p>
+              <div className="feature-icon">🏸</div>
+              <h3>Sân chất lượng cao</h3>
+              <p>Các sân cầu lông được trang bị hiện đại, sạch sẽ và an toàn</p>
             </div>
             <div className="feature-card">
-              <div className="feature-icon">💰</div>
-              <h3>Affordable Pricing</h3>
-              <p>Competitive hourly rates with flexible booking options</p>
+              <div className="feature-icon">⚡</div>
+              <h3>Đặt sân nhanh chóng</h3>
+              <p>Hệ thống đặt sân trực tuyến tiện lợi, chỉ với vài cú click</p>
             </div>
             <div className="feature-card">
-              <div className="feature-icon">📱</div>
-              <h3>Easy Online Booking</h3>
-              <p>Book courts instantly through our user-friendly platform</p>
+              <div className="feature-icon">💳</div>
+              <h3>Thanh toán linh hoạt</h3>
+              <p>Hỗ trợ thanh toán online và offline, áp dụng coupon giảm giá</p>
             </div>
             <div className="feature-card">
-              <div className="feature-icon">🎯</div>
-              <h3>Equipment Rental</h3>
-              <p>Rent high-quality rackets for only 30,000 VND per racket</p>
+              <div className="feature-icon">⭐</div>
+              <h3>Đánh giá minh bạch</h3>
+              <p>Xem đánh giá từ người dùng thực để chọn sân phù hợp nhất</p>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="cta-section">
+      {/* Featured Courts Section */}
+      <section className="featured-courts">
         <div className="container">
-          <h2>Ready to Play?</h2>
-          <p>Join thousands of satisfied customers who trust our badminton courts</p>
-          {isAuthenticated ? (
-            <Link to="/booking" className="btn btn-success btn-large">
-              Book a Court Now
-            </Link>
+          <h2 className="section-title">Sân nổi bật</h2>
+          {loading ? (
+            <div className="loading">
+              <div className="spinner"></div>
+            </div>
           ) : (
-            <div className="cta-actions">
-              <Link to="/login" className="btn btn-primary btn-large">
-                Login
-              </Link>
-              <Link to="/register" className="btn btn-success btn-large">
-                Register
-              </Link>
+            <div className="courts-grid">
+              {featuredCourts.map((court) => (
+                <div key={court.id} className="court-card">
+                  <div className="court-image">
+                    {court.imageUrl ? (
+                      <img src={court.imageUrl} alt={court.courtName} />
+                    ) : (
+                      <div className="court-placeholder">🏸</div>
+                    )}
+                  </div>
+                  <div className="court-info">
+                    <h3 className="court-name">{court.courtName}</h3>
+                    <p className="court-description">{court.description}</p>
+                    <div className="court-price">
+                      {court.pricePerHour.toLocaleString('vi-VN')} VNĐ/giờ
+                    </div>
+                    <Link 
+                      to={`/courts/${court.id}`} 
+                      className="btn btn-primary court-btn"
+                    >
+                      Xem chi tiết
+                    </Link>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
+          <div className="section-footer">
+            <Link to="/courts" className="btn btn-secondary">
+              Xem tất cả sân
+            </Link>
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="cta">
+        <div className="container">
+          <h2>Bắt đầu đặt sân ngay hôm nay!</h2>
+          <p>Tham gia cộng đồng người chơi cầu lông và trải nghiệm dịch vụ tốt nhất</p>
+          <Link to="/register" className="btn btn-primary btn-large">
+            Đăng ký miễn phí
+          </Link>
+        </div>
+      </section>
     </div>
   );
 };

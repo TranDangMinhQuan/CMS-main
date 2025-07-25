@@ -1,310 +1,204 @@
-# 🏸 Badminton Court Booking System
+# Badminton Court Booking System
 
-A comprehensive badminton court booking management system built with Spring Boot (backend) and React TypeScript (frontend).
+Hệ thống đặt sân cầu lông với Spring Boot backend và React TypeScript frontend.
 
-## Features
+## Tính năng chính
 
-### For All Users (Guest)
-- View available courts and their information
-- Browse court reviews and ratings
-- View pricing information
+### Cho Guest (Khách vãng lai)
+- Xem thông tin các sân cầu lông
+- Xem đánh giá và rating của sân
+- Tìm kiếm sân theo tên
+- Xem sân còn trống theo thời gian
 
-### For Members
-- All guest features
-- User registration and login
-- Book courts online
-- Choose payment method (online/cash at court)
-- Rent rackets (30,000 VND each)
-- Apply discount coupons
-- View and manage personal bookings
-- Write reviews for courts
+### Cho Member (Thành viên)
+- Tất cả tính năng của Guest
+- Đăng nhập/Đăng ký tài khoản
+- Đặt sân cầu lông
+- Thanh toán online/offline
+- Áp dụng coupon giảm giá
+- Thuê vợt (30k/cây)
+- Viết review và rating sân
+- Xem lịch sử booking
 
-### For Staff
-- All member features
-- View dashboard with daily statistics
-- Manage court bookings
-- Process payments for walk-in customers
-- Manage racket rentals
-- View revenue reports
+### Cho Staff (Nhân viên)
+- Quản lý các sân (thêm, sửa, xóa)
+- Set trạng thái sân (available, unavailable, maintenance)
+- Tính tiền cho khách (thanh toán offline)
+- Quản lý cho thuê vợt
+- Xem lịch sử giao dịch
 
-### For Owner
-- All staff features
-- Manage users (create staff, suspend/activate users)
-- Manage courts (set status, availability)
-- View comprehensive reports
-- Monthly revenue analysis
-- Transaction history
+### Cho Owner (Chủ sở hữu)
+- Tất cả tính năng của Staff
+- Quản lý tài khoản Member và Staff
+- Suspend/Active tài khoản
+- Tạo tài khoản Staff
+- Xem báo cáo doanh thu theo tháng
+- Xem lịch sử giao dịch chi tiết
 
-## Technology Stack
+## Công nghệ sử dụng
 
 ### Backend
 - **Java 17**
 - **Spring Boot 3.2.0**
-- **Spring Security** (JWT Authentication)
-- **Spring Data JPA**
+- **Spring Security** (Authentication & Authorization)
+- **Spring Data JPA** (Database ORM)
 - **Microsoft SQL Server** (Database)
 - **Maven** (Build tool)
 
 ### Frontend
-- **React 18** with TypeScript
-- **React Router** (Navigation)
+- **React 18** với **TypeScript**
+- **React Router DOM** (Routing)
 - **Axios** (HTTP Client)
 - **CSS Modules** (Styling)
 
-## Project Structure
+## Cài đặt và chạy dự án
 
-```
-badminton-booking-system/
-├── backend/                    # Spring Boot backend
-│   ├── src/main/java/com/badminton/booking/
-│   │   ├── controller/        # REST Controllers
-│   │   ├── service/           # Service Interfaces
-│   │   ├── serviceimpl/       # Service Implementations
-│   │   ├── repository/        # JPA Repositories
-│   │   ├── entity/            # JPA Entities
-│   │   ├── dto/               # Data Transfer Objects
-│   │   ├── enums/             # Enumerations
-│   │   └── config/            # Security & JWT Config
-│   ├── src/main/resources/
-│   │   └── application.properties
-│   └── pom.xml
-├── frontend/                   # React frontend
-│   ├── src/
-│   │   ├── components/        # Reusable components
-│   │   ├── pages/             # Page components
-│   │   ├── services/          # API services
-│   │   ├── context/           # React contexts
-│   │   ├── types/             # TypeScript types
-│   │   └── utils/             # Utility functions
-│   ├── public/
-│   └── package.json
-├── start-backend.sh           # Backend startup script
-├── start-frontend.sh          # Frontend startup script
-└── README.md
-```
+### Yêu cầu hệ thống
+- Java 17+
+- Node.js 16+
+- Microsoft SQL Server hoặc để Spring Boot tự tạo database
 
-## Database Schema
+### 1. Cài đặt dependencies
 
-The system uses the following main entities:
-- **Users** (id, username, email, fullName, phoneNumber, role, isActive, timestamps)
-- **Courts** (id, name, description, hourlyRate, status, timestamps)
-- **Bookings** (id, userId, courtId, startTime, endTime, totalAmount, status, notes, timestamps)
-- **Payments** (id, bookingId, amount, paymentMethod, status, transactionId, paidAt, timestamps)
-- **Reviews** (id, userId, courtId, rating, comment, createdAt)
-- **Coupons** (id, code, description, discountPercentage, maxDiscountAmount, validity, usageLimit, timestamps)
-- **RacketRentals** (id, bookingId, quantity, pricePerRacket, totalAmount, timestamps)
-
-## Prerequisites
-
-- **Java 17** or higher
-- **Maven 3.6+**
-- **Node.js 16+** and npm
-- **Microsoft SQL Server** (or configure for another database)
-
-## Installation & Setup
-
-### Database Setup
-
-1. Install Microsoft SQL Server
-2. Create a database named `badminton_booking`
-3. Update the database configuration in `backend/src/main/resources/application.properties`:
-
-```properties
-spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=badminton_booking;encrypt=false;trustServerCertificate=true
-spring.datasource.username=your_username
-spring.datasource.password=your_password
-```
-
-### Backend Setup
-
-1. Navigate to the backend directory:
+#### Backend
 ```bash
 cd backend
+./mvnw clean install
 ```
 
-2. Install dependencies and run the application:
-```bash
-mvn clean install
-mvn spring-boot:run
-```
-
-Or use the provided script:
-```bash
-./start-backend.sh
-```
-
-The backend will start on `http://localhost:8080`
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
+#### Frontend
 ```bash
 cd frontend
-```
-
-2. Install dependencies:
-```bash
 npm install
 ```
 
-3. Start the development server:
-```bash
-npm run dev
+### 2. Cấu hình Database
+
+Cập nhật file `backend/src/main/resources/application.properties`:
+
+```properties
+# Database Configuration (Tùy chọn - Spring Boot có thể tự tạo DB)
+spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=badminton_booking;encrypt=false;trustServerCertificate=true
+spring.datasource.username=sa
+spring.datasource.password=YOUR_PASSWORD
 ```
 
-Or use the provided script:
+### 3. Chạy ứng dụng
+
+#### Cách 1: Chạy script tự động
 ```bash
+# Chạy backend
+chmod +x start-backend.sh
+./start-backend.sh
+
+# Chạy frontend (terminal mới)
+chmod +x start-frontend.sh
 ./start-frontend.sh
 ```
 
-The frontend will start on `http://localhost:3000`
+#### Cách 2: Chạy thủ công
 
-## API Documentation
-
-### Authentication Endpoints
-- `POST /api/auth/login` - User login
-- `POST /api/auth/register` - User registration
-
-### Court Endpoints
-- `GET /api/courts` - Get all courts (public)
-- `GET /api/courts/{id}` - Get court by ID (public)
-- `GET /api/courts/available` - Get available courts (public)
-- `POST /api/courts` - Create court (Owner only)
-- `PUT /api/courts/{id}` - Update court (Owner only)
-- `PUT /api/courts/{id}/status` - Update court status (Staff/Owner)
-
-### Booking Endpoints
-- `POST /api/bookings` - Create booking (Members+)
-- `GET /api/bookings/my-bookings` - Get user bookings (Members+)
-- `GET /api/bookings` - Get all bookings (Staff+)
-- `PUT /api/bookings/{id}/status` - Update booking status (Staff+)
-
-### Review Endpoints
-- `POST /api/reviews` - Create review (Members+)
-- `GET /api/reviews/court/{courtId}` - Get court reviews (public)
-- `GET /api/reviews/court/{courtId}/average` - Get average rating (public)
-
-### Admin Endpoints
-- `GET /api/users` - Get all users (Owner only)
-- `POST /api/users/staff` - Create staff (Owner only)
-- `PUT /api/users/{id}/status` - Update user status (Owner only)
-
-### Reports Endpoints
-- `GET /api/reports/revenue/today` - Today's revenue (Staff+)
-- `GET /api/reports/revenue/monthly` - Monthly revenue (Staff+)
-- `GET /api/reports/dashboard` - Dashboard data (Staff+)
-
-## User Roles & Permissions
-
-### Guest
-- View courts and reviews
-- No booking capabilities
-
-### Member
-- All guest features
-- Book courts
-- Manage bookings
-- Write reviews
-- Apply coupons
-
-### Staff
-- All member features
-- View dashboard
-- Manage all bookings
-- Process payments
-- View reports
-
-### Owner
-- All staff features
-- User management
-- Court management
-- Full administrative access
-
-## Default Test Data
-
-When the application starts, it will create default users for testing:
-
-- **Owner**: username: `owner`, password: `password123`
-- **Staff**: username: `staff`, password: `password123`
-- **Member**: username: `member`, password: `password123`
-
-## Configuration
-
-### Backend Configuration (application.properties)
-
-```properties
-# Database Configuration
-spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=badminton_booking
-spring.datasource.username=sa
-spring.datasource.password=your_password
-
-# JPA Configuration
-spring.jpa.hibernate.ddl-auto=create-drop
-spring.jpa.show-sql=true
-
-# Server Configuration
-server.port=8080
-server.servlet.context-path=/api
-
-# JWT Configuration
-jwt.secret=mySecretKey
-jwt.expiration=86400000
-
-# CORS Configuration
-cors.allowed-origins=http://localhost:3000
+**Backend:**
+```bash
+cd backend
+./mvnw spring-boot:run
 ```
 
-### Frontend Configuration
+**Frontend:**
+```bash
+cd frontend
+npm run dev
+```
 
-The frontend is configured to connect to the backend at `http://localhost:8080/api`. Update the `API_BASE_URL` in `src/services/api.ts` if needed.
+### 4. Truy cập ứng dụng
 
-## Contributing
+- **Frontend:** http://localhost:3000
+- **Backend API:** http://localhost:8080/api
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/login` - Đăng nhập
+- `POST /api/auth/register` - Đăng ký
+- `POST /api/auth/logout` - Đăng xuất
+
+### Courts (Public)
+- `GET /api/courts/public` - Lấy danh sách sân (guest)
+- `GET /api/courts/public/{id}` - Chi tiết sân (guest)
+- `GET /api/courts/public/available` - Sân còn trống (guest)
+- `GET /api/courts/public/search` - Tìm kiếm sân (guest)
+
+### Courts (Protected)
+- `GET /api/courts` - Lấy tất cả sân (member+)
+- `POST /api/courts` - Tạo sân mới (staff+)
+- `PUT /api/courts/{id}` - Cập nhật sân (staff+)
+- `PUT /api/courts/{id}/status` - Cập nhật trạng thái (owner)
+- `DELETE /api/courts/{id}` - Xóa sân (owner)
+
+### Bookings
+- `POST /api/bookings` - Đặt sân (member+)
+- `GET /api/bookings/my` - Booking của tôi (member+)
+- `GET /api/bookings` - Tất cả booking (staff+)
+- `PUT /api/bookings/{id}/status` - Cập nhật trạng thái (staff+)
+
+### Reviews
+- `GET /api/reviews/public/court/{courtId}` - Đánh giá sân (public)
+- `POST /api/reviews` - Tạo đánh giá (member+)
+- `PUT /api/reviews/{id}` - Cập nhật đánh giá (member)
+- `DELETE /api/reviews/{id}` - Xóa đánh giá (member)
+
+### Admin (Owner only)
+- `GET /api/admin/users` - Quản lý users
+- `PUT /api/admin/users/{id}/role` - Cập nhật role
+- `PUT /api/admin/users/{id}/status` - Suspend/Active user
+
+## Cấu trúc dự án
+
+```
+badminton-booking/
+├── backend/
+│   ├── src/main/java/com/badminton/booking/
+│   │   ├── entity/          # Database entities
+│   │   ├── dto/             # Data Transfer Objects
+│   │   ├── repository/      # JPA Repositories
+│   │   ├── service/         # Service interfaces
+│   │   ├── serviceimpl/     # Service implementations
+│   │   ├── controller/      # REST Controllers
+│   │   ├── config/          # Configuration classes
+│   │   └── security/        # Security configurations
+│   ├── src/main/resources/
+│   │   └── application.properties
+│   └── pom.xml
+├── frontend/
+│   ├── src/
+│   │   ├── components/      # React components
+│   │   ├── pages/           # Page components
+│   │   ├── services/        # API services
+│   │   ├── contexts/        # React contexts
+│   │   ├── types/           # TypeScript types
+│   │   └── utils/           # Utility functions
+│   ├── public/
+│   └── package.json
+├── start-backend.sh
+├── start-frontend.sh
+└── README.md
+```
+
+## Tài khoản mặc định
+
+Sau khi chạy ứng dụng lần đầu, bạn có thể:
+
+1. **Đăng ký tài khoản mới** qua giao diện web
+2. **Tạo tài khoản Owner** qua database để quản lý hệ thống
+
+## Đóng góp
+
+1. Fork repository
+2. Tạo feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Tạo Pull Request
 
 ## License
 
-This project is licensed under the MIT License.
-
-## Troubleshooting
-
-### SQL Server SSL Connection Issues
-
-If you encounter SSL/TLS certificate errors like:
-```
-"encrypt" property is set to "true" and "trustServerCertificate" property is set to "false"
-```
-
-**Solution 1:** Update `application.properties` with:
-```properties
-spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=CMS_system;encrypt=false;trustServerCertificate=true;integratedSecurity=false;authenticationScheme=nativeAuthentication;sslProtocol=TLS
-```
-
-**Solution 2:** Use the alternative development profile:
-```bash
-mvn spring-boot:run -Dspring.profiles.active=dev
-```
-
-**Solution 3:** For complete SSL bypass (if still having issues):
-```bash
-mvn spring-boot:run -Dspring.profiles.active=nossl
-```
-
-**Solution 4:** For older SQL Server versions, try:
-```properties
-spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=CMS_system;trustServerCertificate=true
-```
-
-### Common Issues
-
-- **Database not found**: Make sure SQL Server is running and database `CMS_system` exists
-- **Port conflicts**: Change `server.port` in `application.properties` if port 8080 is in use
-- **Authentication failed**: Verify SQL Server username/password in `application.properties`
-
-## Support
-
-For support or questions, please create an issue in the repository.
+Dự án này được phân phối dưới giấy phép MIT.

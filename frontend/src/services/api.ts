@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { AuthResponse, LoginRequest, RegisterRequest, Court, Booking, BookingRequest, Review, User } from '../types';
+import { User, Court, Booking, Review, LoginCredentials, RegisterData, BookingCreate } from '../types';
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
@@ -10,132 +10,160 @@ const api = axios.create({
   },
 });
 
-// Add auth token to requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
 // Auth API
 export const authAPI = {
-  login: (credentials: LoginRequest): Promise<AuthResponse> =>
-    api.post('/auth/login', credentials).then(res => res.data),
-  
-  register: (userData: RegisterRequest): Promise<AuthResponse> =>
-    api.post('/auth/register', userData).then(res => res.data),
-};
-
-// Court API
-export const courtAPI = {
-  getAllCourts: (): Promise<Court[]> =>
-    api.get('/courts').then(res => res.data),
-  
-  getCourtById: (id: number): Promise<Court> =>
-    api.get(`/courts/${id}`).then(res => res.data),
-  
-  getAvailableCourts: (startTime?: string, endTime?: string): Promise<Court[]> => {
-    let url = '/courts/available';
-    if (startTime && endTime) {
-      url += `?startTime=${startTime}&endTime=${endTime}`;
-    }
-    return api.get(url).then(res => res.data);
+  login: async (credentials: LoginCredentials) => {
+    const response = await api.post('/auth/login', credentials);
+    return response.data;
   },
-  
-  createCourt: (court: Partial<Court>): Promise<Court> =>
-    api.post('/courts', court).then(res => res.data),
-  
-  updateCourt: (id: number, court: Partial<Court>): Promise<Court> =>
-    api.put(`/courts/${id}`, court).then(res => res.data),
-  
-  updateCourtStatus: (id: number, status: string): Promise<Court> =>
-    api.put(`/courts/${id}/status?status=${status}`).then(res => res.data),
-  
-  deleteCourt: (id: number): Promise<void> =>
-    api.delete(`/courts/${id}`).then(res => res.data),
+
+  register: async (userData: RegisterData) => {
+    const response = await api.post('/auth/register', userData);
+    return response.data;
+  },
+
+  logout: async () => {
+    const response = await api.post('/auth/logout');
+    return response.data;
+  },
 };
 
-// Booking API
-export const bookingAPI = {
-  createBooking: (bookingData: BookingRequest): Promise<Booking> =>
-    api.post('/bookings', bookingData).then(res => res.data),
-  
-  getUserBookings: (): Promise<Booking[]> =>
-    api.get('/bookings/my-bookings').then(res => res.data),
-  
-  getAllBookings: (): Promise<Booking[]> =>
-    api.get('/bookings').then(res => res.data),
-  
-  getBookingById: (id: number): Promise<Booking> =>
-    api.get(`/bookings/${id}`).then(res => res.data),
-  
-  updateBookingStatus: (id: number, status: string): Promise<Booking> =>
-    api.put(`/bookings/${id}/status?status=${status}`).then(res => res.data),
-  
-  getTodayBookings: (): Promise<Booking[]> =>
-    api.get('/bookings/today').then(res => res.data),
-  
-  getMonthlyBookings: (month: number, year: number): Promise<Booking[]> =>
-    api.get(`/bookings/monthly?month=${month}&year=${year}`).then(res => res.data),
+// Courts API (Guest accessible)
+export const courtsAPI = {
+  // Public endpoints for guests
+  getAllCourtsPublic: async (): Promise<Court[]> => {
+    const response = await api.get('/courts/public');
+    return response.data;
+  },
+
+  getCourtByIdPublic: async (id: number) => {
+    const response = await api.get(`/courts/public/${id}`);
+    return response.data;
+  },
+
+  getAvailableCourtsPublic: async (startTime: string, endTime: string): Promise<Court[]> => {
+    const response = await api.get('/courts/public/available', {
+      params: { startTime, endTime }
+    });
+    return response.data;
+  },
+
+  searchCourtsPublic: async (name: string): Promise<Court[]> => {
+    const response = await api.get('/courts/public/search', {
+      params: { name }
+    });
+    return response.data;
+  },
+
+  // Protected endpoints for authenticated users
+  getAllCourts: async (): Promise<Court[]> => {
+    const response = await api.get('/courts');
+    return response.data;
+  },
+
+  getCourtById: async (id: number) => {
+    const response = await api.get(`/courts/${id}`);
+    return response.data;
+  },
+
+  createCourt: async (courtData: any) => {
+    const response = await api.post('/courts', courtData);
+    return response.data;
+  },
+
+  updateCourt: async (id: number, courtData: any) => {
+    const response = await api.put(`/courts/${id}`, courtData);
+    return response.data;
+  },
+
+  updateCourtStatus: async (id: number, status: string) => {
+    const response = await api.put(`/courts/${id}/status`, { status });
+    return response.data;
+  },
+
+  deleteCourt: async (id: number) => {
+    const response = await api.delete(`/courts/${id}`);
+    return response.data;
+  },
 };
 
-// Review API
-export const reviewAPI = {
-  createReview: (review: Partial<Review>): Promise<Review> =>
-    api.post('/reviews', review).then(res => res.data),
-  
-  getReviewsByCourt: (courtId: number): Promise<Review[]> =>
-    api.get(`/reviews/court/${courtId}`).then(res => res.data),
-  
-  getAverageRating: (courtId: number): Promise<number> =>
-    api.get(`/reviews/court/${courtId}/average`).then(res => res.data),
-  
-  getUserReviews: (): Promise<Review[]> =>
-    api.get('/reviews/my-reviews').then(res => res.data),
-  
-  deleteReview: (id: number): Promise<void> =>
-    api.delete(`/reviews/${id}`).then(res => res.data),
+// Reviews API (Public accessible)
+export const reviewsAPI = {
+  getReviewsByCourtId: async (courtId: number): Promise<Review[]> => {
+    const response = await api.get(`/reviews/public/court/${courtId}`);
+    return response.data;
+  },
+
+  createReview: async (reviewData: any) => {
+    const response = await api.post('/reviews', reviewData);
+    return response.data;
+  },
+
+  updateReview: async (id: number, reviewData: any) => {
+    const response = await api.put(`/reviews/${id}`, reviewData);
+    return response.data;
+  },
+
+  deleteReview: async (id: number) => {
+    const response = await api.delete(`/reviews/${id}`);
+    return response.data;
+  },
 };
 
-// User API (for admin functions)
-export const userAPI = {
-  getAllUsers: (): Promise<User[]> =>
-    api.get('/users').then(res => res.data),
-  
-  getActiveStaff: (): Promise<User[]> =>
-    api.get('/users/staff').then(res => res.data),
-  
-  getActiveMembers: (): Promise<User[]> =>
-    api.get('/users/members').then(res => res.data),
-  
-  createStaff: (userData: RegisterRequest): Promise<User> =>
-    api.post('/users/staff', userData).then(res => res.data),
-  
-  updateUserStatus: (userId: number, isActive: boolean): Promise<User> =>
-    api.put(`/users/${userId}/status?isActive=${isActive}`).then(res => res.data),
-  
-  updateUserRole: (userId: number, role: string): Promise<User> =>
-    api.put(`/users/${userId}/role?role=${role}`).then(res => res.data),
+// Bookings API
+export const bookingsAPI = {
+  createBooking: async (bookingData: BookingCreate) => {
+    const response = await api.post('/bookings', bookingData);
+    return response.data;
+  },
+
+  getMyBookings: async (): Promise<Booking[]> => {
+    const response = await api.get('/bookings/my');
+    return response.data;
+  },
+
+  getAllBookings: async (): Promise<Booking[]> => {
+    const response = await api.get('/bookings');
+    return response.data;
+  },
+
+  getBookingById: async (id: number): Promise<Booking> => {
+    const response = await api.get(`/bookings/${id}`);
+    return response.data;
+  },
+
+  updateBookingStatus: async (id: number, status: string) => {
+    const response = await api.put(`/bookings/${id}/status`, { status });
+    return response.data;
+  },
+
+  cancelBooking: async (id: number) => {
+    const response = await api.delete(`/bookings/${id}`);
+    return response.data;
+  },
 };
 
-// Reports API
-export const reportAPI = {
-  getTodayRevenue: (): Promise<number> =>
-    api.get('/reports/revenue/today').then(res => res.data),
-  
-  getMonthlyRevenue: (month: number, year: number): Promise<number> =>
-    api.get(`/reports/revenue/monthly?month=${month}&year=${year}`).then(res => res.data),
-  
-  getTodayTransactions: (): Promise<any[]> =>
-    api.get('/reports/transactions/today').then(res => res.data),
-  
-  getTodayBookings: (): Promise<Booking[]> =>
-    api.get('/reports/bookings/today').then(res => res.data),
-  
-  getDashboardData: (): Promise<any> =>
-    api.get('/reports/dashboard').then(res => res.data),
+// Users API (Admin)
+export const usersAPI = {
+  getAllUsers: async (): Promise<User[]> => {
+    const response = await api.get('/admin/users');
+    return response.data;
+  },
+
+  getUserById: async (id: number): Promise<User> => {
+    const response = await api.get(`/admin/users/${id}`);
+    return response.data;
+  },
+
+  updateUserRole: async (id: number, role: string) => {
+    const response = await api.put(`/admin/users/${id}/role`, { role });
+    return response.data;
+  },
+
+  updateUserStatus: async (id: number, status: string) => {
+    const response = await api.put(`/admin/users/${id}/status`, { status });
+    return response.data;
+  },
 };
 
 export default api;

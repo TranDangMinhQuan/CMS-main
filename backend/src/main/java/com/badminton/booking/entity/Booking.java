@@ -1,11 +1,14 @@
 package com.badminton.booking.entity;
 
-import com.badminton.booking.enums.BookingStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "bookings")
@@ -22,27 +25,55 @@ public class Booking {
     @JoinColumn(name = "court_id", nullable = false)
     private Court court;
 
-    @NotNull(message = "Start time is required")
-    @Column(name = "start_time")
+    @NotNull
     private LocalDateTime startTime;
 
-    @NotNull(message = "End time is required")
-    @Column(name = "end_time")
+    @NotNull
     private LocalDateTime endTime;
 
-    @Column(name = "total_amount", precision = 10, scale = 2)
+    @NotNull
+    @Positive
+    @Column(precision = 10, scale = 2)
     private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     private BookingStatus status = BookingStatus.PENDING;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private PaymentMethod paymentMethod;
+
+    @Column(length = 500)
     private String notes;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<RacketRental> racketRentals;
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Payment> payments;
+
+    @ManyToMany
+    @JoinTable(
+        name = "booking_coupons",
+        joinColumns = @JoinColumn(name = "booking_id"),
+        inverseJoinColumns = @JoinColumn(name = "coupon_id")
+    )
+    private Set<Coupon> coupons;
+
+    public enum BookingStatus {
+        PENDING, CONFIRMED, COMPLETED, CANCELLED
+    }
+
+    public enum PaymentMethod {
+        ONLINE, OFFLINE
+    }
 
     // Constructors
     public Booking() {}
@@ -112,6 +143,14 @@ public class Booking {
         this.status = status;
     }
 
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
     public String getNotes() {
         return notes;
     }
@@ -136,8 +175,27 @@ public class Booking {
         this.updatedAt = updatedAt;
     }
 
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
+    public Set<RacketRental> getRacketRentals() {
+        return racketRentals;
+    }
+
+    public void setRacketRentals(Set<RacketRental> racketRentals) {
+        this.racketRentals = racketRentals;
+    }
+
+    public Set<Payment> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(Set<Payment> payments) {
+        this.payments = payments;
+    }
+
+    public Set<Coupon> getCoupons() {
+        return coupons;
+    }
+
+    public void setCoupons(Set<Coupon> coupons) {
+        this.coupons = coupons;
     }
 }
