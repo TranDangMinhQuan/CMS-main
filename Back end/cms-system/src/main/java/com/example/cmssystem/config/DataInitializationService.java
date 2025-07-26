@@ -1,8 +1,8 @@
-package com.example.cmssystem.service;
+package com.example.cmssystem.config;
 
 import com.example.cmssystem.entity.court.Court;
 import com.example.cmssystem.enums.Status;
-import com.example.cmssystem.repository.CourtRepository;
+import com.example.cmssystem.repository.court.CourtRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;

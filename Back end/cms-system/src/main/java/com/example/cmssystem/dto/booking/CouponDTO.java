@@ -1,36 +1,19 @@
-package com.example.cmssystem.entity.booking;
+package com.example.cmssystem.dto.booking;
 
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "coupons")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class Coupon {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Data
+public class CouponDTO {
     private Long id;
-
     private String code;
-
     private BigDecimal discountAmount;
-
     private Double discountPercent;
-
     private LocalDateTime validFrom;
-
     private LocalDateTime validUntil;
-
     private Boolean isActive;
-
     private Integer usageLimit;
-
     private Integer usedCount;
 }

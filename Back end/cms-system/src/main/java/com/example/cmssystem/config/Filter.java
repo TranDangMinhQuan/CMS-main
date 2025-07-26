@@ -49,7 +49,19 @@ public class Filter extends OncePerRequestFilter {
             "POST:/api/emergency-requests",
             "POST:/api/reset-password-request",
             "POST:/api/forgot-password-request",
-            "GET:/ws/**"
+            "GET:/ws/**",
+            //  Thêm mới để test
+            "GET:/api/court-packages",
+            "GET:/api/court-packages/court/**",
+            "POST:/api/court-packages",
+            "PUT:/api/court-packages/**",
+            "DELETE:/api/court-packages/**",
+
+            "GET:/api/court-schedules",
+            "GET:/api/court-schedules/court/**",
+            "POST:/api/court-schedules",
+            "PUT:/api/court-schedules/**",
+            "DELETE:/api/court-schedules/**"
     );
 
     public boolean isPublicAPI(String uri, String method) {

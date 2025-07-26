@@ -1,11 +1,8 @@
 package com.example.cmssystem.entity.booking;
 
-import com.example.cmssystem.entity.auth.Account;
 import com.example.cmssystem.entity.court.Court;
-import com.example.cmssystem.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.Nationalized;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,9 +17,8 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "Customer_Id", nullable = false)
-    private Account customer;
+    @Column(name = "Booking_Code", nullable = false, unique = true)
+    private String bookingCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Court_Id", nullable = false)
@@ -37,41 +33,35 @@ public class Booking {
     @Column(name = "End_Time", nullable = false)
     private LocalTime endTime;
 
-    @Column(name = "Total_Hours", nullable = false)
+    @Column(name = "Total_Hours")
     private BigDecimal totalHours;
 
-    @Column(name = "Price_Per_Hour", nullable = false, precision = 10, scale = 2)
+    @Column(name = "Price_Per_Hour")
     private BigDecimal pricePerHour;
 
-    @Column(name = "Total_Amount", nullable = false, precision = 10, scale = 2)
+    @Column(name = "Total_Amount")
     private BigDecimal totalAmount;
 
-    @Column(name = "Discount_Amount", precision = 10, scale = 2)
-    private BigDecimal discountAmount = BigDecimal.ZERO;
+    @Column(name = "Discount_Amount")
+    private BigDecimal discountAmount;
 
-    @Column(name = "Final_Amount", nullable = false, precision = 10, scale = 2)
+    @Column(name = "Final_Amount")
     private BigDecimal finalAmount;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "Status", nullable = false)
-    private BookingStatus status;
+    @Column(name = "Status")
+    private String status;
 
-    @Column(name = "Customer_Name", nullable = false)
-    @Nationalized
+    @Column(name = "Customer_Name")
     private String customerName;
 
-    @Column(name = "Customer_Phone", nullable = false)
+    @Column(name = "Customer_Phone")
     private String customerPhone;
 
     @Column(name = "Customer_Email")
     private String customerEmail;
 
-    @Column(name = "Notes", columnDefinition = "TEXT")
-    @Nationalized
+    @Column(name = "Notes")
     private String notes;
-
-    @Column(name = "Booking_Code", unique = true, nullable = false)
-    private String bookingCode;
 
     @Column(name = "Created_At")
     private LocalDateTime createdAt;
@@ -85,19 +75,13 @@ public class Booking {
     @Column(name = "Cancelled_At")
     private LocalDateTime cancelledAt;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        if (this.status == null) {
-            this.status = BookingStatus.PENDING;
-        }
-        // Generate booking code
-        this.bookingCode = "BK" + System.currentTimeMillis();
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coupon_id")
+    private Coupon coupon;
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+    @ManyToOne
+    @JoinColumn(name = "package_id")
+    private BookingPackage bookingPackage;
+
+
 }
