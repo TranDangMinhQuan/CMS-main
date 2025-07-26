@@ -27,8 +27,6 @@ public class RegisterRequest {
     @NotNull(message = "Gender is required")
     private Gender gender;
 
-    @NotNull(message = "Blood type is required")
-    private Long bloodTypeId;
 
     @NotNull(message = "Date of birth is required")
     @Past(message = "Date of birth must be in the past")

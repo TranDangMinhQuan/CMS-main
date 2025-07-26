@@ -1,34 +1,33 @@
-package com.example.cmssystem.entity.booking;
+package com.example.cmssystem.entity.court;
 
+import com.example.cmssystem.entity.common.Auditable;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.Nationalized;
 
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "Booking_Package")
+@Table(name = "Court_Package")
 @Data
-public class BookingPackage {
+public class CourtPackage extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Nationalized
-    @Column(name = "Name", nullable = false, unique = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Court_Id", nullable = false)
+    private Court court;
+
+    @Column(name = "Name", nullable = false)
     private String name;
 
     @Column(name = "Duration_Minutes", nullable = false)
-    private Integer durationMinutes; // số phút trong gói (ví dụ 60, 90, 120)
+    private int durationMinutes;
 
     @Column(name = "Price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
     @Column(name = "Description")
-    @Nationalized
     private String description;
-
-    @Column(name = "Is_Active")
-    private Boolean isActive = true;
 }

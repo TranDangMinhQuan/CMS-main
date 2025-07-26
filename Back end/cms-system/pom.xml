@@ -9,7 +9,7 @@
         <relativePath/>
     </parent>
     <groupId>com.gtwo</groupId>
-    <artifactId>bdss-system</artifactId>
+    <artifactId>cms-system</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>cms-system</name>
     <description>Court Management System</description>
